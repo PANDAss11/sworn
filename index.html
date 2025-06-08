@@ -1,71 +1,178 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-  <meta charset="UTF-8">
-  <title>Sworn's File Manager</title>
+  <meta charset="UTF-8" />
+  <title>Sworn Surveillance Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
     body {
-      background: #1e1e1e;
-      color: #ccc;
-      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      background: #050505;
+      color: #00ff00;
+      font-family: 'Share Tech Mono', monospace;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
       padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #app {
+      width: 600px;
+      max-width: 95vw;
+      height: 500px;
+      background: linear-gradient(180deg, #001000 0%, #000000 100%);
+      box-shadow: 0 0 30px #00ff00aa;
+      border: 2px solid #00ff00;
+      display: flex;
+      flex-direction: column;
+      border-radius: 12px;
+      overflow: hidden;
+      padding: 30px 40px;
     }
 
     h1 {
-      color: #00ff99;
+      font-size: 2rem;
+      margin-bottom: 15px;
+      text-shadow: 0 0 5px #00ff00;
+      text-align: center;
     }
 
-    .file {
-      background: #2b2b2b;
-      border: 1px solid #444;
-      padding: 10px;
-      margin: 10px 0;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .file:hover {
-      background: #333;
-      color: #00ff99;
-    }
-
-    #output {
-      margin-top: 30px;
-      background: #111;
+    #logs {
+      flex-grow: 1;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      white-space: pre-line;
+      overflow-y: auto;
+      border: 1px solid #004400;
       padding: 15px;
-      border: 1px solid #333;
-      color: red;
-      min-height: 50px;
+      background: #002200;
+      border-radius: 8px;
+      box-shadow: inset 0 0 10px #004400aa;
+      margin-bottom: 20px;
+      user-select: text;
     }
+
+    #scanBtn {
+      background: #004400;
+      border: none;
+      padding: 12px 24px;
+      color: #00ff00;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.1rem;
+      cursor: pointer;
+      border-radius: 6px;
+      box-shadow: 0 0 10px #00ff00aa;
+      transition: background 0.3s ease;
+      user-select: none;
+      align-self: center;
+      width: 180px;
+    }
+    #scanBtn:hover:not(:disabled) {
+      background: #006600;
+    }
+    #scanBtn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Glitch effect for roast summary */
+    .glitch {
+      color: #ff3f3f;
+      font-weight: bold;
+      text-shadow:
+        2px 0 red,
+        -2px 0 cyan,
+        1px 0 #ff3f3f,
+        -1px 0 #00ffff;
+      animation: glitchAnim 1.5s infinite;
+    }
+
+    @keyframes glitchAnim {
+      0% {
+        text-shadow:
+          2px 0 red,
+          -2px 0 cyan;
+      }
+      50% {
+        text-shadow:
+          -2px 0 red,
+          2px 0 cyan;
+      }
+      100% {
+        text-shadow:
+          2px 0 red,
+          -2px 0 cyan;
+      }
+    }
+
   </style>
 </head>
 <body>
+  <div id="app" role="main" aria-label="Sworn Surveillance Monitor App">
+    <h1>🖥️ Sworn Surveillance Monitor</h1>
+    <div id="logs" aria-live="polite" aria-atomic="true" aria-relevant="additions">
+      [ SYSTEM ] Initializing monitoring...
+    </div>
+    <button id="scanBtn" aria-label="Start system scan">Start Scan</button>
+  </div>
 
-<h1>📁 Sworn's File Manager</h1>
+  <script>
+    const logsEl = document.getElementById('logs');
+    const btn = document.getElementById('scanBtn');
 
-<div class="file" onclick="roast('aim.config')">📄 aim.config</div>
-<div class="file" onclick="roast('skills.txt')">📄 skills.txt</div>
-<div class="file" onclick="roast('confidence.sys')">📄 confidence.sys</div>
-<div class="file" onclick="roast('trash')">🗑 Trash</div>
-<div class="file" onclick="roast('gaming.log')">📄 gaming.log</div>
-<div class="file" onclick="roast('IQ.dat')">📄 IQ.dat</div>
+    const scanSteps = [
+      "[ CPU ] Checking reflex speed... 0.003ms 🐢",
+      "[ GPU ] Rendering excuses... Loading... ❌",
+      "[ MEMORY ] Confidence levels at 1% 💀",
+      "[ STORAGE ] Skillset folder corrupted.",
+      "[ NETWORK ] Ping to victory: 9999ms (Timeout)",
+      "[ SECURITY ] Antivirus detected: 'No skill detected.exe'",
+      "[ FINAL ] System verdict: Uninstall Sworn.exe immediately.",
+      "",
+      "🔥 Roast Summary 🔥",
+      "Sworn's gameplay is slower than dial-up.",
+      "If lag was skill, he'd be a pro.",
+      "Sworn.exe crashed — try turning off your excuses.",
+      "Better uninstall and take a break."
+    ];
 
-<div id="output"></div>
+    function appendLog(text) {
+      logsEl.textContent += "\n" + text;
+      logsEl.scrollTop = logsEl.scrollHeight;
+    }
 
-<script>
-  function roast(file) {
-    const burns = {
-      'aim.config': "File is empty. Like your kill feed.",
-      'skills.txt': "Error 404: Skill not found.",
-      'confidence.sys': "Corrupted beyond repair. Try uninstalling yourself.",
-      'trash': "🗑 Found: sworn.exe. Do you want to delete permanently?",
-      'gaming.log': "Last seen: losing to bots and blaming lag.",
-      'IQ.dat': "File size: 0 bytes. Consistent with expectations."
-    };
+    function runScan() {
+      btn.disabled = true;
+      logsEl.textContent = "[ SYSTEM ] Starting full system scan...\n";
 
-    document.getElementById('output').innerText = burns[file] || "System error: roast overload.";
-  }
-</script>
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i >= scanSteps.length) {
+          clearInterval(interval);
+          btn.disabled = false;
+          // Highlight roast summary in red and glitch style
+          const lines = logsEl.textContent.split('\n');
+          const summaryStart = lines.findIndex(line => line.includes("🔥 Roast Summary"));
+          if(summaryStart !== -1) {
+            for(let j = summaryStart; j < lines.length; j++){
+              lines[j] = `<span class="glitch">${lines[j]}</span>`;
+            }
+            logsEl.innerHTML = lines.join('\n').replace(/\n/g, '<br>');
+          }
+          return;
+        }
+        appendLog(scanSteps[i]);
+        i++;
+      }, 1500);
+    }
 
+    btn.addEventListener('click', runScan);
+  </script>
 </body>
 </html>
