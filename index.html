@@ -2,138 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Sworn.exe Crash Report</title>
+  <title>Sworn's File Manager</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      font-family: 'Courier New', Courier, monospace;
-      box-sizing: border-box;
-    }
-
     body {
-      background-color: #000033;
-      color: #00FFEA;
-      padding: 40px;
-      font-size: 18px;
-      overflow-x: hidden;
-    }
-
-    #console {
-      white-space: pre-line;
-      border: 2px solid #00ffee;
+      background: #1e1e1e;
+      color: #ccc;
+      font-family: 'Courier New', Courier, monospace;
       padding: 20px;
-      background-color: #001144;
-      animation: flicker 1s infinite alternate;
-      box-shadow: 0 0 15px #00ffee;
     }
 
-    @keyframes flicker {
-      0% { opacity: 1; }
-      100% { opacity: 0.9; }
+    h1 {
+      color: #00ff99;
     }
 
-    .line {
-      opacity: 0;
-      animation: type 0.4s ease forwards;
-    }
-
-    @keyframes type {
-      to { opacity: 1; }
-    }
-
-    #restart {
-      display: none;
-      margin-top: 30px;
-      padding: 15px 30px;
-      background: #00ffee;
-      color: #001;
-      border: none;
-      font-size: 20px;
+    .file {
+      background: #2b2b2b;
+      border: 1px solid #444;
+      padding: 10px;
+      margin: 10px 0;
       cursor: pointer;
-      animation: pulse 1s infinite;
+      transition: 0.2s;
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
+    .file:hover {
+      background: #333;
+      color: #00ff99;
     }
 
-    .shake {
-      animation: shake 0.5s;
-    }
-
-    @keyframes shake {
-      0% { transform: translate(0px, 0px); }
-      20% { transform: translate(-5px, 5px); }
-      40% { transform: translate(5px, -5px); }
-      60% { transform: translate(-5px, 5px); }
-      80% { transform: translate(5px, -5px); }
-      100% { transform: translate(0px, 0px); }
-    }
-
-    #finalRoast {
+    #output {
+      margin-top: 30px;
+      background: #111;
+      padding: 15px;
+      border: 1px solid #333;
       color: red;
-      font-weight: bold;
-      font-size: 20px;
-      margin-top: 20px;
-      display: none;
+      min-height: 50px;
     }
   </style>
 </head>
 <body>
 
-<div id="console"></div>
-<div id="finalRoast"></div>
-<button id="restart">RESTART SYSTEM</button>
+<h1>📁 Sworn's File Manager</h1>
+
+<div class="file" onclick="roast('aim.config')">📄 aim.config</div>
+<div class="file" onclick="roast('skills.txt')">📄 skills.txt</div>
+<div class="file" onclick="roast('confidence.sys')">📄 confidence.sys</div>
+<div class="file" onclick="roast('trash')">🗑 Trash</div>
+<div class="file" onclick="roast('gaming.log')">📄 gaming.log</div>
+<div class="file" onclick="roast('IQ.dat')">📄 IQ.dat</div>
+
+<div id="output"></div>
 
 <script>
-  const lines = [
-    "[BOOTING] System: sworn.exe",
-    "[INFO]   Loading KD ratio...",
-    "[WARNING] KD ratio below expected levels (0.3 detected)",
-    "[ERROR]  Aim.exe failed to initialize.",
-    "[DEBUG]  Found process: excuse_generator_v2.bat",
-    "[CRASH]  Skill.dll missing from directory.",
-    "[ANALYSIS] Movement: slower than grandma on dial-up.",
-    "[ROAST.INJECT] Injecting disrespect...",
-    "[SAVAGE] Even bots dodge you to avoid embarrassment.",
-    "[FATAL ERROR] Sworn's ego has overflowed despite zero kills.",
-    "[CRITICAL] Intelligence.exe not found.",
-    "[REPORT] Confidence has disconnected.",
-    "[BSOD] Game crashed because the game couldn’t handle how bad Sworn is.",
-    "[RECOMMENDED ACTION] Cry in the settings menu."
-  ];
+  function roast(file) {
+    const burns = {
+      'aim.config': "File is empty. Like your kill feed.",
+      'skills.txt': "Error 404: Skill not found.",
+      'confidence.sys': "Corrupted beyond repair. Try uninstalling yourself.",
+      'trash': "🗑 Found: sworn.exe. Do you want to delete permanently?",
+      'gaming.log': "Last seen: losing to bots and blaming lag.",
+      'IQ.dat': "File size: 0 bytes. Consistent with expectations."
+    };
 
-  const finalRoastText = "System Tip: Uninstall yourself before others do.";
-
-  const consoleEl = document.getElementById('console');
-  const restartBtn = document.getElementById('restart');
-  const finalRoastEl = document.getElementById('finalRoast');
-
-  let delay = 1000;
-  lines.forEach((line, index) => {
-    setTimeout(() => {
-      const p = document.createElement('div');
-      p.textContent = line;
-      p.className = 'line';
-      consoleEl.appendChild(p);
-      if (index === lines.length - 1) {
-        restartBtn.style.display = 'inline-block';
-      }
-    }, delay * index);
-  });
-
-  restartBtn.onclick = () => {
-    document.body.classList.add('shake');
-    finalRoastEl.textContent = finalRoastText;
-    finalRoastEl.style.display = 'block';
-
-    setTimeout(() => {
-      location.reload();
-    }, 4000);
-  };
+    document.getElementById('output').innerText = burns[file] || "System error: roast overload.";
+  }
 </script>
 
 </body>
