@@ -1,179 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>FPS Roast Game</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #000;
-      font-family: monospace;
-      color: white;
-    }
-    canvas {
-      display: block;
-      cursor: crosshair;
-    }
-    .overlay, .disconnect, .roast {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.85);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-      display: none;
-    }
-    .button {
-      margin-top: 20px;
-      padding: 12px 30px;
-      background-color: #ff4444;
-      border: none;
-      color: white;
-      font-size: 20px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .disconnect h1 {
-      color: #ffaaaa;
-    }
-    .roast p {
-      max-width: 600px;
-      font-size: 18px;
-      color: #ffcccc;
-      text-align: center;
-    }
-    #mission {
-      position: absolute;
-      top: 20px;
-      width: 100%;
-      text-align: center;
-      font-size: 32px;
-      font-weight: bold;
-      color: #00ff00;
-      text-shadow: 0 0 8px #00ff00;
-      user-select: none;
-      pointer-events: none;
-      z-index: 5;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Sworn's Ultimate Test - Harder Roast Game</title>
+<style>
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+  html, body {
+    height: 100%; width: 100%; overflow: hidden;
+    background: linear-gradient(45deg, #1a1a1a, #111);
+    font-family: 'Courier New', Courier, monospace;
+    color: #f44336;
+    user-select: none;
+  }
+  #gameArea {
+    position: relative;
+    width: 100vw; height: 100vh;
+  }
+  #target {
+    position: absolute;
+    width: 30px; height: 30px;
+    background: #ff4444;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    cursor: pointer;
+    transition: left 0.3s ease, top 0.3s ease, background-color 0.2s;
+  }
+  #target:hover {
+    background-color: #ff2222;
+  }
+  #message {
+    position: absolute;
+    top: 20px; left: 50%; transform: translateX(-50%);
+    font-size: 24px; font-weight: bold;
+    color: #ff6666;
+    text-shadow: 0 0 10px #ff0000;
+  }
+  #missFlash {
+    position: absolute;
+    top: 60px; left: 50%; transform: translateX(-50%);
+    font-size: 18px;
+    color: #ff2222;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  #timer {
+    position: absolute;
+    top: 10px; right: 20px;
+    font-size: 20px;
+    color: #fff;
+    text-shadow: 0 0 5px #000;
+  }
+  #finalRoast {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.95);
+    color: #ff3333;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+    font-weight: bold;
+    z-index: 100;
+    display: none;
+    user-select: text;
+  }
+  #retryBtn {
+    margin-top: 25px;
+    padding: 15px 40px;
+    background-color: #ff4444;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #ff0000;
+    transition: background-color 0.3s;
+  }
+  #retryBtn:hover {
+    background-color: #ff2222;
+  }
+</style>
 </head>
 <body>
 
-<div id="mission">🔫 Kill the Enemy</div>
-
-<canvas id="gameCanvas"></canvas>
-
-<div class="disconnect" id="disconnect">
-  <h1>⚠ Connection Lost</h1>
-  <p>Your connection to the game server has been interrupted.</p>
-  <button class="button" onclick="showRoast()">Reconnect</button>
+<div id="gameArea">
+  <div id="message">Catch Sworn's Confidence!</div>
+  <div id="missFlash"></div>
+  <div id="timer">Time Left: 20s</div>
+  <div id="target"></div>
 </div>
 
-<div class="roast" id="roast">
-  <h1>Reconnected...</h1>
-  <p>
-    Sworn got eliminated and took the WiFi with him. Bro lags so hard his killcam looks like a slideshow.<br><br>
-    He plays like he's using a potato powered by prayers. Someone give this man an Ethernet cable and a reality check.
-  </p>
+<div id="finalRoast">
+  <div>
+    Sworn’s confidence vanished faster than his kill streak!<br><br>
+    He dodges responsibility better than this target — but can't dodge the truth.<br><br>
+    <i>“Playing like a laggy bot, crying harder than his ping!”</i><br><br>
+    <button id="retryBtn">Try Again</button>
+  </div>
 </div>
 
 <script>
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  const target = document.getElementById('target');
+  const gameArea = document.getElementById('gameArea');
+  const missFlash = document.getElementById('missFlash');
+  const message = document.getElementById('message');
+  const timerDisplay = document.getElementById('timer');
+  const finalRoast = document.getElementById('finalRoast');
+  const retryBtn = document.getElementById('retryBtn');
 
-  let enemy = {
-    x: Math.random() * (canvas.width - 100) + 50,
-    y: Math.random() * (canvas.height - 100) + 50,
-    radius: 30,
-    alive: true
-  };
+  let misses = 0;
+  const maxMisses = 5;
+  let timeLeft = 20; // seconds
+  let baseSpeed = 1200; // milliseconds target moves initially
+  let currentSpeed = baseSpeed;
+  let moveTimeout;
+  let countdownInterval;
 
-  function drawCrosshair() {
-    const x = canvas.width / 2;
-    const y = canvas.height / 2;
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(x - 10, y);
-    ctx.lineTo(x + 10, y);
-    ctx.moveTo(x, y - 10);
-    ctx.lineTo(x, y + 10);
-    ctx.stroke();
+  // Randomly move the target inside game area bounds
+  function moveTarget() {
+    const maxX = window.innerWidth - target.offsetWidth - 10;
+    const maxY = window.innerHeight - target.offsetHeight - 10;
+
+    const newX = Math.random() * maxX;
+    const newY = Math.random() * maxY;
+
+    // Use smooth CSS transition for movement
+    target.style.left = `${newX}px`;
+    target.style.top = `${newY}px`;
+
+    // Schedule next move with currentSpeed delay
+    clearTimeout(moveTimeout);
+    moveTimeout = setTimeout(moveTarget, currentSpeed);
   }
 
-  function drawEnemy() {
-    if (enemy.alive) {
-      ctx.fillStyle = 'red';
-      ctx.beginPath();
-      ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
-      ctx.fill();
-      // Add a simple “enemy” eye to make it look more like a target
-      ctx.fillStyle = 'black';
-      ctx.beginPath();
-      ctx.arc(enemy.x - 8, enemy.y - 5, 6, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(enemy.x + 8, enemy.y - 5, 6, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = 'white';
-      ctx.beginPath();
-      ctx.arc(enemy.x - 8, enemy.y - 5, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(enemy.x + 8, enemy.y - 5, 3, 0, Math.PI * 2);
-      ctx.fill();
+  function startMoving() {
+    moveTarget();
+  }
+
+  function stopMoving() {
+    clearTimeout(moveTimeout);
+  }
+
+  function startTimer() {
+    countdownInterval = setInterval(() => {
+      timeLeft--;
+      timerDisplay.textContent = `Time Left: ${timeLeft}s`;
+      if (timeLeft <= 0) {
+        gameOver();
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(countdownInterval);
+  }
+
+  // Flash a brutal roast on miss
+  function flashMissMessage() {
+    const roastLines = [
+      "Sworn’s aim is worse than his grades!",
+      "Bro couldn’t hit water if he fell out of a boat.",
+      "Is your mouse broken, or is it just your skills?",
+      "I’ve seen bots with better reaction times than you.",
+      "You miss more than Sworn misses gym days.",
+    ];
+    const randomLine = roastLines[Math.floor(Math.random() * roastLines.length)];
+    missFlash.textContent = randomLine;
+    missFlash.style.opacity = '1';
+    setTimeout(() => {
+      missFlash.style.opacity = '0';
+    }, 1500);
+  }
+
+  // When player misses: increment misses, speed up target, roast more
+  function onMiss() {
+    misses++;
+    flashMissMessage();
+    // Accelerate the target speed - it moves faster after every miss
+    currentSpeed = Math.max(300, currentSpeed - 300);
+    stopMoving();
+    startMoving();
+
+    if (misses >= maxMisses) {
+      gameOver();
     }
   }
 
-  function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawCrosshair();
-    drawEnemy();
-    requestAnimationFrame(render);
-  }
+  // When target is clicked (caught)
+  target.addEventListener('click', (e) => {
+    e.stopPropagation(); // prevent counting as miss on gameArea
+    stopTimer();
+    stopMoving();
+    message.textContent = 'You caught Sworn’s confidence!';
 
-  canvas.addEventListener('click', (e) => {
-    if (!enemy.alive) return;
-    const dx = e.clientX - enemy.x;
-    const dy = e.clientY - enemy.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    if (distance <= enemy.radius) {
-      enemy.alive = false;
-      // Remove mission text
-      document.getElementById('mission').style.display = 'none';
+    setTimeout(() => {
+      alert('You win! But remember, Sworn still sucks at this game.');
+      resetGame();
+    }, 1000);
+  });
 
-      setTimeout(() => {
-        document.getElementById('disconnect').style.display = 'flex';
-      }, 800);
+  // Detect clicks anywhere else = miss
+  gameArea.addEventListener('click', (e) => {
+    if (e.target !== target) {
+      if (misses < maxMisses) {
+        onMiss();
+      }
     }
   });
 
-  function showRoast() {
-    document.getElementById('disconnect').style.display = 'none';
-    document.getElementById('roast').style.display = 'flex';
+  function gameOver() {
+    stopTimer();
+    stopMoving();
+    gameArea.style.filter = 'blur(5px)';
+    finalRoast.style.display = 'flex';
   }
 
-  render();
+  function resetGame() {
+    misses = 0;
+    timeLeft = 20;
+    currentSpeed = baseSpeed;
+    gameArea.style.filter = 'none';
+    message.textContent = "Catch Sworn's Confidence!";
+    timerDisplay.textContent = `Time Left: ${timeLeft}s`;
+    finalRoast.style.display = 'none';
+    startMoving();
+    startTimer();
+  }
 
-  // Resize canvas if window changes size
+  retryBtn.addEventListener('click', () => {
+    resetGame();
+  });
+
+  // Start game on load
+  startMoving();
+  startTimer();
+
+  // Resize handler so target stays inside view on window resize
   window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    render();
+    // Just move target once to new position to avoid being off-screen
+    moveTarget();
   });
 </script>
 
